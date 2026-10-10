@@ -1,0 +1,1073 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mirzo Ulug‘bek Home Search</title>
+<style>
+:root{
+  --bg:#f6f5f2;--surface:#fff;--surface-2:#f0eee9;--text:#1d1c1a;--muted:#6b6862;--border:#e2dfd8;
+  --accent:#2f6f5e;--accent-soft:#e3efeb;
+  --ok:#2f6f5e;--ok-soft:#e3efeb;--warn:#9a6a12;--warn-soft:#f6ecd7;--bad:#a3402f;--bad-soft:#f6e1dc;--old:#5d5a8f;--old-soft:#e7e6f3;
+  --radius:12px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#161615;--surface:#1f1f1d;--surface-2:#2a2a27;--text:#ecebe7;--muted:#a19e97;--border:#363532;
+  --accent:#7cc4ae;--accent-soft:#1f3530;
+  --ok:#7cc4ae;--ok-soft:#1f3530;--warn:#e0b25c;--warn-soft:#3a2f1a;--bad:#e8907f;--bad-soft:#3d231e;--old:#aaa7e0;--old-soft:#2a2940;
+}}
+:root[data-theme="dark"]{
+  --bg:#161615;--surface:#1f1f1d;--surface-2:#2a2a27;--text:#ecebe7;--muted:#a19e97;--border:#363532;
+  --accent:#7cc4ae;--accent-soft:#1f3530;
+  --ok:#7cc4ae;--ok-soft:#1f3530;--warn:#e0b25c;--warn-soft:#3a2f1a;--bad:#e8907f;--bad-soft:#3d231e;--old:#aaa7e0;--old-soft:#2a2940;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:1100px;margin:0 auto;padding:24px 16px 64px}
+header h1{font-size:1.6rem;margin:0 0 4px}
+header p{margin:0;color:var(--muted)}
+.req{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.pill{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:4px 12px;font-size:.85rem}
+.note{background:var(--warn-soft);color:var(--text);border-radius:var(--radius);padding:12px 14px;font-size:.9rem;margin:12px 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:16px 0}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px}
+.stat b{display:block;font-size:1.5rem}
+.stat span{color:var(--muted);font-size:.82rem}
+nav.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin:24px 0 16px;overflow-x:auto}
+nav.tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:8px 12px;color:var(--muted);font:inherit;cursor:pointer;white-space:nowrap}
+nav.tabs button.on{color:var(--text);border-color:var(--accent);font-weight:600}
+.panel{display:none}.panel.on{display:block}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.filters input,.filters select{font:inherit;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 10px}
+.filters input[type=search]{flex:1 1 200px;min-width:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:8px}
+.card.top{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.id{font-weight:700}
+.price{font-size:1.35rem;font-weight:700}
+.cur{font-size:.75rem;color:var(--muted);font-weight:400}
+.badge{font-size:.75rem;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.b-ok{background:var(--ok-soft);color:var(--ok)}.b-warn{background:var(--warn-soft);color:var(--warn)}
+.b-bad{background:var(--bad-soft);color:var(--bad)}.b-old{background:var(--old-soft);color:var(--old)}
+.b-dup{background:var(--surface-2);color:var(--muted)}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.fact{background:var(--surface-2);border-radius:8px;padding:6px 8px;font-size:.82rem}
+.fact span{display:block;color:var(--muted);font-size:.72rem}
+.loc{font-size:.9rem}
+.muted{color:var(--muted);font-size:.82rem}
+details{font-size:.85rem}
+details summary{cursor:pointer;color:var(--accent)}
+dl{display:grid;grid-template-columns:90px 1fr;gap:4px 8px;margin:8px 0 0}
+dt{color:var(--muted)}dd{margin:0;overflow-wrap:anywhere}
+.track{display:flex;gap:8px;align-items:center;border-top:1px solid var(--border);padding-top:8px;margin-top:auto}
+.track select{flex:1;font:inherit;font-size:.85rem;color:var(--text);background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:4px 6px}
+.track textarea{width:100%;font:inherit;font-size:.82rem;color:var(--text);background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:6px;resize:vertical;min-height:34px}
+table{width:100%;border-collapse:collapse;font-size:.88rem;background:var(--surface);border-radius:var(--radius);overflow:hidden}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+.tscroll{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius)}
+h2{font-size:1.15rem;margin:24px 0 8px}
+.box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.box ul{margin:6px 0;padding-left:20px}
+.quote{background:var(--accent-soft);border-left:3px solid var(--accent);padding:10px 12px;border-radius:8px;margin:8px 0}
+.copy{font:inherit;font-size:.8rem;background:var(--accent);color:var(--surface);border:0;border-radius:6px;padding:4px 10px;cursor:pointer}
+.empty{color:var(--muted);padding:24px;text-align:center}
+.theme{float:right;font:inherit;font-size:.8rem;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:4px 10px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <button class="theme" id="theme">Theme</button>
+  <h1>Mirzo Ulug‘bek home search</h1>
+  <p>Qorasuv first, then the whole district · Tashkent · research snapshot <b id="rdate"></b></p>
+</header>
+
+<div class="req">
+  <span class="pill">Qorasuv (Q) + rest of Mirzo Ulug‘bek (M) + karasu_realtor Telegram (T)</span>
+  <span class="pill">2–3 rooms</span>
+  <span class="pill">Max US$75,000</span>
+  <span class="pill">Apartment or courtyard house</span>
+</div>
+<div class="note"><b>Not verified.</b> No seller contacted, no property inspected. Prices, availability, addresses and documents all need seller confirmation. “y.e” prices need USD confirmation. Start with <b>Q001, Q002, Q003</b> in Qorasuv (most recent evidence); district-wide, the cheapest usable ones are <b>M006, M011, M012, M013</b>.</div>
+
+<div class="stats" id="stats"></div>
+
+<nav class="tabs">
+  <button data-tab="listings" class="on">Listings</button>
+  <button data-tab="table">Compare table</button>
+  <button data-tab="seller">Seller checklist</button>
+  <button data-tab="sources">Sources</button>
+  <button data-tab="notes">Notes &amp; exclusions</button>
+</nav>
+
+<section class="panel on" id="p-listings">
+  <div class="filters">
+    <input type="search" id="q" placeholder="Search block, condition, contact…">
+    <select id="fZone">
+      <option value="">All areas</option>
+      <option value="Qorasuv">Qorasuv</option>
+      <option value="Mirzo Ulug‘bek">Rest of district</option>
+    </select>
+    <select id="fType">
+      <option value="">Any type</option>
+      <option value="apartment">Apartment</option>
+      <option value="house">Courtyard house</option>
+    </select>
+    <select id="fStatus">
+      <option value="">All statuses</option>
+      <option value="ok" selected>Within budget</option>
+      <option value="old">Archive</option>
+      <option value="warn">Hold / conditional</option>
+      <option value="bad">Excluded</option>
+      <option value="dup">Duplicate</option>
+    </select>
+    <select id="fRooms"><option value="">Any rooms</option><option value="2">2 rooms</option><option value="3">3 rooms</option></select>
+    <select id="fTrack"><option value="">Any progress</option></select>
+    <select id="sort">
+      <option value="id">Sort: ID (priority)</option>
+      <option value="price">Sort: price ↑</option>
+      <option value="ppm">Sort: $/m² ↑</option>
+      <option value="area">Sort: area ↓</option>
+      <option value="date">Sort: newest</option>
+    </select>
+  </div>
+  <div class="grid" id="grid"></div>
+  <p class="muted">Progress and notes save in this browser only.</p>
+</section>
+
+<section class="panel" id="p-table">
+  <div class="tscroll"><table id="tbl"></table></div>
+</section>
+
+<section class="panel" id="p-seller">
+  <div class="box">
+    <b>Message to send each seller</b>
+    <div class="quote" id="msg">Is the property still for sale? Please send its exact address, current price, room count according to the cadastral document, floor, renovation condition, and any agent commission. Our purchase-price limit is US$75,000.</div>
+    <button class="copy" id="copyMsg">Copy</button>
+  </div>
+  <div class="box">
+    <b>Confirm for every lead</b>
+    <ul>
+      <li>Still available? Exact address / map pin, Qorasuv block</li>
+      <li>Current asking price and currency; minimum negotiated price; agent fee</li>
+      <li>Cadastral room count; actual area</li>
+      <li>Renovation estimate; furniture included</li>
+      <li>Floor and working lift; roof condition (top-floor units)</li>
+      <li>Water, heating, utilities</li>
+      <li>Residential registration status and documents</li>
+      <li>Viewing date → decision</li>
+    </ul>
+  </div>
+  <div class="box">
+    <b>Possible duplicates — compare before counting as unique</b>
+    <ul><li>Q001 ↔ Q007 (both Qorasuv-2, 4/4, series 77)</li><li>Q003 ↔ Q012 (both Qorasuv-6, 6/6, renovated)</li>
+    <li>M001 ↔ M004 (Buyuk Ipak Yoli / Khudozhniki, 50 m², 2/5, $75,000); M005 same size/price but 1st floor</li>
+    <li>M011 + M012 come from the same M2bomber category page — unique original links unknown</li>
+    <li>T002 = Q008 and T005 = Q007 (same karasu_realtor posts) — shown as “Duplicate”, not counted</li></ul>
+  </div>
+  <div class="box">
+    <b>karasu_realtor Telegram channel (T-leads)</b>
+    <ul>
+      <li>4 new leads: T001 Qorasuv-3 (3 rooms, 110 m², 9/9, $74,444) · T003 Yalangach / Eco Bazaar ($69,999) · T004 Qorasuv-4 ($75,000) · T006 Feruza ($62,000)</li>
+      <li>All one contact: +998901670756 / <a href="https://t.me/guli_076" target="_blank" rel="noopener">@guli_076</a> — one message can cover T001, T003, T004, T006 and Q007/Q008</li>
+      <li>Publication dates unknown; only public previews checked, not full history. Rentals and above-budget posts were skipped.</li>
+    </ul>
+  </div>
+  <div class="box">
+    <b>District-wide priorities (M-leads)</b>
+    <ul>
+      <li><b>Lower price, usable condition:</b> M006 Feruza $62,000 · M011 Feruza $62,000 · M012 Feruza $62,500 · M013 Riverside $66,000 — confirm converted room counts, floor, listing identity</li>
+      <li><b>Lower floors:</b> M001/M004 (2nd, $75,000) · M005 (1st, $75,000) · M007 (3rd, $70,000) · M014 (2nd, $66,000, unfinished)</li>
+      <li><b>Courtyard house:</b> M010 only — conditional until cadastral district confirmed (Mirzo Ulug‘bek vs Qibray)</li>
+      <li><b>Three rooms:</b> M008 ($70,000, needs renovation) · M013 ($66,000, top floor) · M009 is an old archive lead</li>
+    </ul>
+  </div>
+</section>
+
+<section class="panel" id="p-sources">
+  <h2>Sources to revisit for Qorasuv</h2>
+  <div class="box"><ul>
+    <li><a href="https://www.olx.uz/nedvizhimost/kvartiry/prodazha/tashkent/q-%D0%BC%D0%B8%D1%80%D0%B7%D0%BE-%D1%83%D0%BB%D1%83%D0%B3%D0%B1%D0%B5%D0%BA%D1%81%D0%BA%D0%B8%D0%B9-%D0%BA%D0%B0%D1%80%D0%B0%D1%81%D1%83/" target="_blank" rel="noopener">OLX Mirzo Ulug‘bek / Qorasuv apartments</a></li>
+    <li><a href="https://t.me/karasu_realtor" target="_blank" rel="noopener">Qorasuv specialist Telegram channel</a></li>
+    <li><a href="https://uybor.uz/" target="_blank" rel="noopener">Uybor</a> · <a href="https://urbo.uz/" target="_blank" rel="noopener">Urbo</a> · <a href="https://hata.uz/" target="_blank" rel="noopener">HATA</a> · <a href="https://birbir.uz/ru/tashkent" target="_blank" rel="noopener">BirBir</a> · <a href="https://bisyor.uz/" target="_blank" rel="noopener">Bisyor</a> · <a href="https://realt24.uz/" target="_blank" rel="noopener">Realt24</a></li>
+  </ul>
+  <p class="muted">Search terms used: Карасу квартира 2 / 3 комнатная продажа; Qorasuv hovli sotiladi; Карасу дом / участок 65000 / 70000 / 75000.</p></div>
+
+  <h2>All Tashkent house-buying sources (26)</h2>
+  <div class="filters"><input type="search" id="sq" placeholder="Filter sources…"></div>
+  <div class="tscroll"><table id="srcTbl"></table></div>
+  <p class="muted">Extra Telegram directories: <a href="https://proarendu.com/tg-catalog/uzbekistan/tashkent/" target="_blank" rel="noopener">ProArendu</a>, <a href="https://toprealtycat.com/?city=%D0%A2%D0%B0%D1%88%D0%BA%D0%B5%D0%BD%D1%82" target="_blank" rel="noopener">TopRealtyCat</a>. Useful terms: hovli sotiladi, uy sotiladi, продажа домов, участок, коттедж. Watch for Tashkent city vs Tashkent region mix-ups.</p>
+</section>
+
+<section class="panel" id="p-notes">
+  <h2>Location trap</h2>
+  <div class="box">“Qorasuv / Карасу” names several places. Restrict searches to <b>Tashkent city, Mirzo Ulug‘bek district</b> — a Qorasuv category alone is not enough.</div>
+  <h2>Excluded house / plot results</h2>
+  <div class="box"><ul>
+    <li><a href="https://www.olx.uz/oz/nedvizhimost/doma/prodazha/q-qorasuv/" target="_blank" rel="noopener">OLX Qorasuv house search</a>: two Qorasuv-6 courtyard houses at 3,545,910,000 and 3,191,319,000 UZS — not established as budget matches (no exchange conversion applied).</li>
+    <li><a href="https://www.olx.uz/d/oz/obyavlenie/hovli-sotiladi-4-sotix-ID3Vwee.html" target="_blank" rel="noopener">4-sotix house, 17,500 y.e</a>: Tashkent <i>region</i>, 7 km inward; 4 rooms, unfinished shell.</li>
+    <li><a href="https://www.olx.uz/d/obyavlenie/prodaetsya-uchastok-9-sotok-zemli-ID3I0yQ.html" target="_blank" rel="noopener">9-sotix plot, 75,000 y.e</a>: Yangibazar, Karasu river — wrong area.</li>
+  </ul>
+  <p class="muted">In Qorasuv, no courtyard house meeting all criteria was found (a search result, not proof none exists). District-wide, M010 is the only conditional house lead.</p></div>
+  <h2>District-wide exclusions</h2>
+  <div class="box"><ul>
+    <li><a href="https://birbir.uz/ru/tashkent/cat/nedvizhimost/prodazha/kvartiry/o/prodazha-akhmad-yugnaki-3-4-4-71394191" target="_blank" rel="noopener">Ahmad Yugnakiy BirBir record</a>: withdrawn from publication.</li>
+    <li><a href="https://realt24.uz/ru/listing/16834/" target="_blank" rel="noopener">Karabulak house</a>: $75,000 but only 1 room; dated 2025-04-08; area wrongly listed as 2 m².</li>
+    <li><a href="https://www.olx.uz/d/obyavlenie/evro-2-komnatnaya-kvartira-zhk-bi-sado-business-ID4pVAn.html" target="_blank" rel="noopener">BI Sado apartment</a>: $70,000, 2 rooms — but Yashnabad district.</li>
+    <li><a href="https://uz.m2bomber.com/search?osmId=5620904&amp;sort=10&amp;type=house-sell" target="_blank" rel="noopener">M2bomber district house search</a>: some “$75,000” results are price <i>per sotix</i>; others are Nanay or Qibray.</li>
+    <li><a href="https://uycatalog.uz/toshkent-shahri/mirzo-ulugbek" target="_blank" rel="noopener">UyCatalog district category</a>: a $75,000 TTZ listing is actually Qibray, floors conflict.</li>
+  </ul></div>
+  <h2>District search coverage</h2>
+  <div class="box">Covered: Feruza, Ahmad Yugnakiy / TTZ / Humoyun, Buyuk Ipak Yoli, Parkent / Oltintepa, Uchhoz / Tukaytepa, plus Qorasuv. Sources: OLX, BirBir, Bisyor, SalomUy, Realting, LK Real ESTATE, Immo, M2bomber, Uy Bozor TV and local directories. Broad search, not a complete inventory. Category-page leads (M011–M014) are weaker and can change when the page updates.</div>
+  <h2>Still undecided</h2>
+  <div class="box"><ul>
+    <li>Qorasuv only, or any part of Mirzo Ulug‘bek? Which block / landmark, and max distance</li>
+    <li>Preferred floor</li>
+    <li>Does US$75,000 include renovation and transaction costs?</li>
+  </ul></div>
+  <h2>Update rules</h2>
+  <div class="box">Keep the same IDs. Add confirmation date and evidence. Never overwrite an older asking price without keeping it in notes. Mark sold / unavailable / duplicate when confirmed.</div>
+</section>
+</div>
+
+<script id="kb" type="application/json">
+{
+  "research_date": "2026-10-10",
+  "timezone": "Asia/Tashkent",
+  "requirements": {
+    "district": "Mirzo Ulugbek, Tashkent city",
+    "area": "Near Qorasuv; block / radius unresolved",
+    "rooms": [
+      2,
+      3
+    ],
+    "max_price_usd": 75000,
+    "types": [
+      "private courtyard house",
+      "apartment"
+    ],
+    "budget_scope": "Purchase asking price; whether fees and renovation must fit cap unresolved"
+  },
+  "evidence_policy": "Advertised facts only, gathered from web search results; no seller contacted. Search retrieval date does not mean listing is active. null means not supplied. Currency y.e needs confirmation. No exact distances verified.",
+  "listings": [
+    {
+      "id": "Q001",
+      "source": "Bisyor",
+      "url": "https://bisyor.uz/uz/obyavlenie/2-komnatnaya-kvartira-62-m-mirzo-ulugbekskiy-rayon-303321.html",
+      "type": "apartment",
+      "location": "Qorasuv-2; opposite МВД Academy",
+      "rooms": 2,
+      "price": 68000,
+      "currency": "y.e (USD-equivalent advertised; confirm)",
+      "area_m2": 62,
+      "floor": 4,
+      "total_floors": 4,
+      "condition": "Needs renovation",
+      "building": "Brick; series 77",
+      "date": "2026-09-19",
+      "contact": "Phone masked on website",
+      "notes": "Separate rooms and bathroom; mortgage claimed possible",
+      "status": "Within advertised budget; availability unconfirmed; search-index evidence; direct fetch failed"
+    },
+    {
+      "id": "Q002",
+      "source": "OLX",
+      "url": "https://www.olx.uz/d/obyavlenie/prodaetsya-3-komnatnaya-novostroyka-karasu-mirzo-ulugbek-ID4uqI1.html",
+      "type": "apartment",
+      "location": "Eco Bazaar / Yalangach / Buz-2 / Qorasuv; exact address unknown",
+      "rooms": 3,
+      "price": 75000,
+      "currency": "y.e (confirm USD)",
+      "area_m2": 68,
+      "floor": 6,
+      "total_floors": 6,
+      "condition": "Renovated; furnished per listing",
+      "building": "New build",
+      "date": "Relative date: today in indexed page; absolute date unconfirmed",
+      "contact": "Leonid; phone hidden",
+      "notes": "Separate rooms; 2 bathrooms; cadastral registration and mortgage claimed; no commission advertised; lift unknown",
+      "status": "Within advertised budget; broad location; availability unconfirmed; direct fetch failed"
+    },
+    {
+      "id": "Q003",
+      "source": "BirBir",
+      "url": "https://birbir.uz/ru/tashkent/cat/nedvizhimost/prodazha/kvartiry/o/chto-segodnya-mozhno-kupit-za-73-000-karasu-6-297901723",
+      "type": "apartment",
+      "location": "Qorasuv-6",
+      "rooms": 2,
+      "price": 73000,
+      "currency": "USD",
+      "area_m2": 60,
+      "floor": 6,
+      "total_floors": 6,
+      "condition": "Renovated; furniture and appliances",
+      "building": "Brick new build; lift claimed",
+      "date": null,
+      "contact": "Via listing",
+      "notes": "Search engine labels publication approximately September 2026; exact date unknown",
+      "status": "Within advertised budget; availability unconfirmed; direct fetch failed"
+    },
+    {
+      "id": "Q004",
+      "source": "BirBir",
+      "url": "https://birbir.uz/ru/tashkent/cat/nedvizhimost/prodazha/kvartiry/o/karasu-1-prodayetsya-2-komnatnaya-kvartira-262938298",
+      "type": "apartment",
+      "location": "Qorasuv-1; kindergarten 148; Korzinka also shown as landmark",
+      "rooms": 2,
+      "price": 65000,
+      "currency": "USD",
+      "area_m2": 62.5,
+      "floor": 2,
+      "total_floors": 5,
+      "condition": "Without renovation",
+      "building": "Secondary market",
+      "date": "2026-07-06",
+      "contact": "Evroluks; via listing",
+      "notes": "Negotiable; structured area 62 m² versus description 62.5 m²; exact landmark needs confirmation",
+      "status": "Within advertised budget; older listing; availability unconfirmed"
+    },
+    {
+      "id": "Q005",
+      "source": "OLX",
+      "url": "https://www.olx.uz/d/obyavlenie/prodaetsya-3-komnatnaya-kvartira-na-karasu-2-ID4lXhL.html",
+      "type": "apartment",
+      "location": "Qorasuv-2; opposite Police Academy",
+      "rooms": 3,
+      "price": 70000,
+      "currency": "y.e (confirm USD)",
+      "area_m2": 78,
+      "floor": 5,
+      "total_floors": 5,
+      "condition": "Needs renovation; unfurnished",
+      "building": "Panel; advertised built 1980–1989",
+      "date": "2026-05-10",
+      "contact": "+998901103090; Mukhtor",
+      "notes": "Separate rooms/bathroom; balcony 2×6; no commission advertised",
+      "status": "Within advertised budget; older listing; availability unconfirmed"
+    },
+    {
+      "id": "Q006",
+      "source": "OLX",
+      "url": "https://www.olx.uz/d/obyavlenie/kvartira-na-karasu-2-2-9-ID4nfWk.html",
+      "type": "apartment",
+      "location": "Qorasuv-3; Korzinka",
+      "rooms": 2,
+      "price": 65000,
+      "currency": "y.e (confirm USD)",
+      "area_m2": 60,
+      "floor": 2,
+      "total_floors": 9,
+      "condition": "Average",
+      "building": "Panel",
+      "date": "2026-05-28",
+      "contact": "Aziz; phone hidden",
+      "notes": "Negotiable; separate bathroom; complete documents claimed. Title 2/2/9 means rooms/floor/building floors, not Qorasuv-2",
+      "status": "Within advertised budget; older listing; availability unconfirmed"
+    },
+    {
+      "id": "Q007",
+      "source": "Telegram karasu_realtor",
+      "url": "https://t.me/s/karasu_realtor/4498",
+      "type": "apartment",
+      "location": "Qorasuv-2",
+      "rooms": 2,
+      "price": 65000,
+      "currency": "USD",
+      "area_m2": 65,
+      "floor": 4,
+      "total_floors": 4,
+      "condition": "Average",
+      "building": "Series 77",
+      "date": null,
+      "contact": "+998901670756; @guli_076",
+      "notes": "Indexed channel page contains multiple posts; exact message and posting date must be confirmed",
+      "status": "Within advertised budget; channel lead; possible duplicate of Q001"
+    },
+    {
+      "id": "Q008",
+      "source": "Telegram karasu_realtor",
+      "url": "https://t.me/s/karasu_realtor?q=%23%D0%A6%D0%B5%D0%BD%D0%B0",
+      "type": "apartment",
+      "location": "Qorasuv-1",
+      "rooms": 2,
+      "price": 75000,
+      "currency": "USD",
+      "area_m2": 60,
+      "floor": 3,
+      "total_floors": 4,
+      "condition": "Average",
+      "building": null,
+      "date": null,
+      "contact": "+998901670756; @guli_076",
+      "notes": "Channel search page rather than unique listing; exact post date unknown",
+      "status": "Within advertised budget; channel lead"
+    },
+    {
+      "id": "Q009",
+      "source": "Realt24",
+      "url": "https://realt24.uz/ru/listing/19220/",
+      "type": "apartment",
+      "location": "Qorasuv-4, building 4",
+      "rooms": 3,
+      "price": 70000,
+      "currency": "USD",
+      "area_m2": 91,
+      "floor": 5,
+      "total_floors": 5,
+      "condition": "Cosmetic renovation",
+      "building": "Brick; no lift",
+      "date": "2025-08-12",
+      "contact": "+998501043760",
+      "notes": "Separate bathroom; gas cooker; loggia; no mortgage advertised",
+      "status": "Archive lead; over one year old; availability unconfirmed"
+    },
+    {
+      "id": "Q010",
+      "source": "OLX",
+      "url": "https://www.olx.uz/d/obyavlenie/prodaetsya-2-h-komnatnaya-kvartira-karasu-1-ID43oe5.html",
+      "type": "apartment",
+      "location": "Qorasuv-1",
+      "rooms": 2,
+      "price": 65000,
+      "currency": "y.e (confirm USD)",
+      "area_m2": 60.5,
+      "floor": 4,
+      "total_floors": 4,
+      "condition": "Average; unfurnished",
+      "building": "Brick; 2018",
+      "date": "2025-05-23",
+      "contact": "Mirkamol Pazilov; phone hidden",
+      "notes": "Private seller; no commission advertised; separate rooms; combined bathroom",
+      "status": "Archive lead; over one year old; availability unconfirmed"
+    },
+    {
+      "id": "Q011",
+      "source": "OLX",
+      "url": "https://www.olx.uz/d/oz/obyavlenie/2v3-3-5-karasu-3-cena-75-000-ID4pIID.html",
+      "type": "apartment",
+      "location": "Qorasuv-3",
+      "rooms": "2 converted to 3",
+      "price": 75500,
+      "currency": "y.e (confirm USD)",
+      "area_m2": 55,
+      "floor": 3,
+      "total_floors": 5,
+      "condition": null,
+      "building": null,
+      "date": null,
+      "contact": "Via listing",
+      "notes": "Title says $75,000 but displayed price says 75,500; area from category search; cadastral room count unknown",
+      "status": "Hold: conflicting price / above cap; not a confirmed budget match"
+    },
+    {
+      "id": "Q012",
+      "source": "LK Real ESTATE",
+      "url": "https://realdom.uz/property/6350/",
+      "type": "apartment",
+      "location": "Qorasuv-6; map is explicitly approximate",
+      "rooms": 2,
+      "price": 79000,
+      "currency": "USD",
+      "area_m2": 59,
+      "floor": 6,
+      "total_floors": 6,
+      "condition": "Renovated; furniture/appliances",
+      "building": null,
+      "date": "2026-08-27",
+      "contact": "Via agency",
+      "notes": "Ceilings advertised 3.4 m; possible similarity to Q003 but cannot confirm duplicate",
+      "status": "Excluded: $4,000 above budget"
+    },
+    {
+      "id": "Q013",
+      "source": "Uybor Telegram",
+      "url": "https://t.me/s/Uybor?before=436556",
+      "type": "nonresidential apartment",
+      "location": "Qorasuv-1",
+      "rooms": 3,
+      "price": 61000,
+      "currency": "y.e (confirm USD)",
+      "area_m2": 88,
+      "floor": 1,
+      "total_floors": 5,
+      "condition": null,
+      "building": null,
+      "date": null,
+      "contact": "+998971038919",
+      "notes": "Advertised as нежилое (nonresidential); Uybor reference 984603",
+      "status": "Excluded from residential shortlist: nonresidential status"
+    }
+  ]
+}
+</script>
+<script id="kb2" type="application/json">
+{
+  "scope": "All Mirzo Ulugbek district; Qorasuv records retained separately in listings.json",
+  "research_date": "2026-10-10",
+  "listings": [
+    {
+      "id": "M001",
+      "source": "LK Real ESTATE",
+      "url": "https://realdom.uz/property/6326/",
+      "type": "apartment",
+      "location": "Buyuk Ipak Yoli",
+      "rooms": 2,
+      "price": 75000,
+      "currency": "USD",
+      "area_m2": 50,
+      "floor": 2,
+      "total_floors": 5,
+      "condition": "Average",
+      "date": "2026-08-26",
+      "contact": "Agency; via listing",
+      "notes": "Balcony 1.5×3; map explicitly approximate; possible duplicate M004",
+      "research_date": "2026-10-10",
+      "status": "Within advertised budget; availability unconfirmed",
+      "evidence": "Web search indexed listing content; seller claims unverified"
+    },
+    {
+      "id": "M002",
+      "source": "SalomUy",
+      "url": "https://ikkilamchi.salomuy.uz/ru/prodazha/kvartira/2022120",
+      "type": "apartment",
+      "location": "Ijodkor / Tukaytepa, 8",
+      "rooms": 2,
+      "price": 65000,
+      "currency": "USD",
+      "area_m2": 66,
+      "floor": 4,
+      "total_floors": 4,
+      "condition": "Unknown",
+      "date": "2026-09-08",
+      "contact": "Zamira; owner; phone hidden",
+      "notes": "Built 2016; living area 54 m²; combined bathroom; renovation not supplied",
+      "research_date": "2026-10-10",
+      "status": "Within advertised budget; availability unconfirmed",
+      "evidence": "Web search indexed listing content; seller claims unverified"
+    },
+    {
+      "id": "M003",
+      "source": "OLX",
+      "url": "https://www.olx.uz/d/obyavlenie/prodaetsya-kvartira-2-3-4-mirzo-ulugbek-uchhoz-s-otopleniem-ID46IoA.html",
+      "type": "apartment",
+      "location": "Uchhoz",
+      "rooms": "2 converted to 3",
+      "price": 65000,
+      "currency": "y.e (confirm USD)",
+      "area_m2": 66,
+      "floor": 3,
+      "total_floors": 4,
+      "condition": "Average",
+      "date": "2026-06-18",
+      "contact": "gozalim9696; private seller",
+      "notes": "Brick series 77; partial furniture; balcony 2×6; boiler/heating claimed; no mortgage; no commission advertised",
+      "research_date": "2026-10-10",
+      "status": "Within advertised budget; availability unconfirmed",
+      "evidence": "Web search indexed listing content; seller claims unverified"
+    },
+    {
+      "id": "M004",
+      "source": "Bisyor",
+      "url": "https://bisyor.uz/obyavlenie/prodaja-2-komnatnoy-kvartiry-v-mirzo-ulugbekskom-r-292568.html",
+      "type": "apartment",
+      "location": "Khudozhniki; opposite Ministry of Defence, building 73",
+      "rooms": 2,
+      "price": 75000,
+      "currency": "y.e (confirm USD)",
+      "area_m2": 50,
+      "floor": 2,
+      "total_floors": 5,
+      "condition": "Unknown",
+      "date": "2026-08-26",
+      "contact": "Via listing; masked phone",
+      "notes": "Balcony; mortgage claimed; possible duplicate M001",
+      "research_date": "2026-10-10",
+      "status": "Within advertised budget; availability unconfirmed",
+      "evidence": "Web search indexed listing content; seller claims unverified"
+    },
+    {
+      "id": "M005",
+      "source": "Bisyor",
+      "url": "https://bisyor.uz/obyavlenie/dvuhkomnatnaya-kvartira-v-mirzo-ulugbekskom-rayone-292644.html",
+      "type": "apartment",
+      "location": "Buyuk Ipak Yoli / Khudozhniki",
+      "rooms": 2,
+      "price": 75000,
+      "currency": "y.e (confirm USD)",
+      "area_m2": 50,
+      "floor": 1,
+      "total_floors": 5,
+      "condition": "Unknown",
+      "date": "2026-08-26",
+      "contact": "Via listing; masked phone",
+      "notes": "Balcony 1.5×3; mortgage claimed; same size/price as M001/M004 but floor differs",
+      "research_date": "2026-10-10",
+      "status": "Within advertised budget; availability unconfirmed",
+      "evidence": "Web search indexed listing content; seller claims unverified"
+    },
+    {
+      "id": "M006",
+      "source": "Bisyor",
+      "url": "https://bisyor.uz/uz/obyavlenie/prodaja-2-komnatnoy-kvartiry-na-massive-feruza-267181.html",
+      "type": "apartment",
+      "location": "Feruza; school 205",
+      "rooms": 2,
+      "price": 62000,
+      "currency": "y.e (confirm USD)",
+      "area_m2": 50,
+      "floor": 3,
+      "total_floors": 4,
+      "condition": "Renovated; partial furnishing",
+      "date": "2026-05-28",
+      "contact": "Via listing",
+      "notes": "Panel; separate bathroom; balcony 1.5×3; older listing",
+      "research_date": "2026-10-10",
+      "status": "Within advertised budget; availability unconfirmed",
+      "evidence": "Web search indexed listing content; seller claims unverified"
+    },
+    {
+      "id": "M007",
+      "source": "SalomUy",
+      "url": "https://ikkilamchi.salomuy.uz/ru/prodazha/kvartira/2012840",
+      "type": "apartment",
+      "location": "Oltintepa; Parkent street 241; Vita Stroy",
+      "rooms": 2,
+      "price": 70000,
+      "currency": "USD",
+      "area_m2": 46,
+      "floor": 3,
+      "total_floors": 9,
+      "condition": "Average",
+      "date": "2026-07-23",
+      "contact": "Aziz; realtor; phone hidden",
+      "notes": "New build; negotiable",
+      "research_date": "2026-10-10",
+      "status": "Within advertised budget; availability unconfirmed",
+      "evidence": "Web search indexed listing content; seller claims unverified"
+    },
+    {
+      "id": "M008",
+      "source": "M2bomber",
+      "url": "https://uz.m2bomber.com/obj/1402010580/view/flat-sell/toshkent-1012-2216724/prodaetsa-3h-komnatnaa-kvartira-ahmad-ugnaki",
+      "type": "apartment",
+      "location": "Ahmad Yugnakiy; school 256 / Family store",
+      "rooms": 3,
+      "price": 70000,
+      "currency": "USD",
+      "area_m2": 78,
+      "floor": 5,
+      "total_floors": 5,
+      "condition": "Needs renovation",
+      "date": null,
+      "contact": "Agency; phone masked",
+      "notes": "Balcony 2×6; mortgage claimed; relative date yesterday cannot be resolved; aggregator lead",
+      "research_date": "2026-10-10",
+      "status": "Within advertised budget; availability unconfirmed",
+      "evidence": "Web search indexed listing content; seller claims unverified"
+    },
+    {
+      "id": "M009",
+      "source": "Realting",
+      "url": "https://realting.uz/property/3422193",
+      "type": "apartment",
+      "location": "Ahmad Yugnakiy",
+      "rooms": 3,
+      "price": 70500,
+      "currency": "USD",
+      "area_m2": 78,
+      "floor": 4,
+      "total_floors": 5,
+      "condition": "Finished; partial furniture negotiable",
+      "date": null,
+      "contact": "Via listing",
+      "notes": "Header $70,500; description $70,000; both within cap; search index over one year old; archive lead",
+      "research_date": "2026-10-10",
+      "status": "Archive lead; availability unconfirmed",
+      "evidence": "Web search indexed listing content; seller claims unverified"
+    },
+    {
+      "id": "M010",
+      "source": "BirBir",
+      "url": "https://birbir.uz/ru/tashkent/cat/nedvizhimost/prodazha/doma/o/prodayu-dom-2-5-sotki-or-r-selkhoz-institut-296775606",
+      "type": "private courtyard house",
+      "location": "Near Agricultural University; Mirzo Ulugbek–Qibray boundary",
+      "rooms": 2,
+      "price": 75000,
+      "currency": "y.e (confirm USD)",
+      "area_m2": null,
+      "floor": null,
+      "total_floors": null,
+      "condition": "Unknown",
+      "date": "2026-09-08",
+      "contact": "Realtor; via listing",
+      "notes": "Courtyard house; 2.5 sotix plot (250 m²), NOT verified house area; 2 rooms plus loggia; indoor bathroom; no vehicle entrance; dead end; cadastral district needs confirmation",
+      "research_date": "2026-10-10",
+      "status": "Conditional: district boundary unconfirmed",
+      "evidence": "Web search indexed listing content; seller claims unverified"
+    },
+    {
+      "id": "M011",
+      "source": "M2bomber",
+      "url": "https://uz.m2bomber.com/flat-sell/feruza-massiv-1012-151569178?page=2",
+      "type": "apartment",
+      "location": "Feruza; cinema / Eco Bazaar",
+      "rooms": 2,
+      "price": 62000,
+      "currency": "USD",
+      "area_m2": 49,
+      "floor": 2,
+      "total_floors": 4,
+      "condition": "Average; described as ready to live",
+      "date": "2026-09-26",
+      "contact": "Owner per aggregator; phone masked",
+      "notes": "No mortgage; not corner; category-page lead, unique original link unknown",
+      "research_date": "2026-10-10",
+      "status": "Within advertised budget; availability unconfirmed",
+      "evidence": "Web search indexed listing content; seller claims unverified"
+    },
+    {
+      "id": "M012",
+      "source": "M2bomber",
+      "url": "https://uz.m2bomber.com/flat-sell/feruza-massiv-1012-151569178?page=2",
+      "type": "apartment",
+      "location": "Feruza; Shukrona / school 205",
+      "rooms": "2 converted to 3",
+      "price": 62500,
+      "currency": "USD",
+      "area_m2": 48,
+      "floor": 4,
+      "total_floors": 4,
+      "condition": "Renovated; furniture and appliances",
+      "date": "2026-09-29",
+      "contact": "Agency; phone masked",
+      "notes": "Negotiable; insulated corner; no mortgage; title says 60 m² but structured field/description 48 m²; category-page lead",
+      "research_date": "2026-10-10",
+      "status": "Within advertised budget; availability unconfirmed",
+      "evidence": "Web search indexed listing content; seller claims unverified"
+    },
+    {
+      "id": "M013",
+      "source": "Immo",
+      "url": "https://immo.uz/uz/tashkent/kupit-kvartiru/metro-buyuk-ipak-yuli",
+      "type": "apartment",
+      "location": "Ahmad Yugnakiy street 112; Riverside",
+      "rooms": 3,
+      "price": 66000,
+      "currency": "y.e (confirm USD)",
+      "area_m2": 53,
+      "floor": 9,
+      "total_floors": 9,
+      "condition": "Ready to live; furniture/appliances",
+      "date": null,
+      "contact": "Elmira; realtor; masked phone",
+      "notes": "Mortgage claimed; category-page lead; displayed today is not confirmed absolute date",
+      "research_date": "2026-10-10",
+      "status": "Within advertised budget; availability unconfirmed",
+      "evidence": "Web search indexed listing content; seller claims unverified"
+    },
+    {
+      "id": "M014",
+      "source": "M2bomber",
+      "url": "https://uz.m2bomber.com/search?osmId=2216724&page=308&rooms=2&sort=10&type=flat-sell",
+      "type": "apartment",
+      "location": "Parkent market; Parkent Avenue",
+      "rooms": 2,
+      "price": 66000,
+      "currency": "USD",
+      "area_m2": 49,
+      "floor": 2,
+      "total_floors": 10,
+      "condition": "Shell / unfinished",
+      "date": "2026-07-25",
+      "contact": "Agency; phone masked",
+      "notes": "Advertiser ID 551; category-page lead; renovation cost not included",
+      "research_date": "2026-10-10",
+      "status": "Within advertised budget; availability unconfirmed",
+      "evidence": "Web search indexed listing content; seller claims unverified"
+    }
+  ]
+}
+</script>
+<script id="kb3" type="application/json">
+{
+  "channel": "https://t.me/karasu_realtor",
+  "checked": "2026-10-10",
+  "coverage": "Public channel preview and indexed price-search page; not full channel history",
+  "listings": [
+    {
+      "id": "T001",
+      "location": "Qorasuv-3",
+      "rooms": 3,
+      "area_m2": 110,
+      "floor": 9,
+      "total_floors": 9,
+      "price_usd": 74444,
+      "condition": "Renovated",
+      "url": "https://t.me/karasu_realtor/5169",
+      "existing_record": null,
+      "published_date": null,
+      "research_date": "2026-10-10",
+      "contact": "+998901670756; @guli_076",
+      "availability": "Unconfirmed",
+      "evidence": "Public indexed channel preview; individual post fetch failed"
+    },
+    {
+      "id": "T002",
+      "location": "Qorasuv-1",
+      "rooms": 2,
+      "area_m2": 60,
+      "floor": 3,
+      "total_floors": 4,
+      "price_usd": 75000,
+      "condition": "Average",
+      "url": "https://t.me/karasu_realtor/5249",
+      "existing_record": "Q008",
+      "published_date": null,
+      "research_date": "2026-10-10",
+      "contact": "+998901670756; @guli_076",
+      "availability": "Unconfirmed",
+      "evidence": "Public indexed channel preview; individual post fetch failed"
+    },
+    {
+      "id": "T003",
+      "location": "Yalangach / Eco Bazaar",
+      "rooms": 2,
+      "area_m2": 55,
+      "floor": 2,
+      "total_floors": 4,
+      "price_usd": 69999,
+      "condition": "Average",
+      "url": "https://t.me/karasu_realtor/5265",
+      "existing_record": null,
+      "published_date": null,
+      "research_date": "2026-10-10",
+      "contact": "+998901670756; @guli_076",
+      "availability": "Unconfirmed",
+      "evidence": "Public indexed channel preview; individual post fetch failed"
+    },
+    {
+      "id": "T004",
+      "location": "Qorasuv-4",
+      "rooms": 2,
+      "area_m2": 63,
+      "floor": 5,
+      "total_floors": 9,
+      "price_usd": 75000,
+      "condition": "Average",
+      "url": "https://t.me/karasu_realtor/5760",
+      "existing_record": null,
+      "published_date": null,
+      "research_date": "2026-10-10",
+      "contact": "+998901670756; @guli_076",
+      "availability": "Unconfirmed",
+      "evidence": "Public indexed channel preview; individual post fetch failed"
+    },
+    {
+      "id": "T005",
+      "location": "Qorasuv-2",
+      "rooms": 2,
+      "area_m2": 65,
+      "floor": 4,
+      "total_floors": 4,
+      "price_usd": 65000,
+      "condition": "Average; series 77",
+      "url": "https://t.me/karasu_realtor/4519",
+      "existing_record": "Q007",
+      "published_date": null,
+      "research_date": "2026-10-10",
+      "contact": "+998901670756; @guli_076",
+      "availability": "Unconfirmed",
+      "evidence": "Public indexed channel preview; individual post fetch failed"
+    },
+    {
+      "id": "T006",
+      "location": "Feruza",
+      "rooms": 2,
+      "area_m2": 60,
+      "floor": 3,
+      "total_floors": 4,
+      "price_usd": 62000,
+      "condition": "Average; balcony 2×6",
+      "url": "https://t.me/karasu_realtor/4529",
+      "existing_record": null,
+      "published_date": null,
+      "research_date": "2026-10-10",
+      "contact": "+998901670756; @guli_076",
+      "availability": "Unconfirmed",
+      "evidence": "Public indexed channel preview; individual post fetch failed"
+    }
+  ]
+}
+</script>
+<script>
+const KB = JSON.parse(document.getElementById('kb').textContent);
+const KB2 = JSON.parse(document.getElementById('kb2').textContent);
+const KB3 = JSON.parse(document.getElementById('kb3').textContent);
+const T_NOTES = {T001:'Verify unusually large advertised area and top-floor condition'};
+const L = [
+  ...KB.listings.map(x => ({...x, zone:'Qorasuv'})),
+  ...KB2.listings.map(x => ({...x, zone:'Mirzo Ulug‘bek'})),
+  ...KB3.listings.map(x => ({
+    id:x.id, source:'Telegram karasu_realtor', url:x.url, type:'apartment', location:x.location,
+    rooms:x.rooms, price:x.price_usd, currency:'USD', area_m2:x.area_m2, floor:x.floor, total_floors:x.total_floors,
+    condition:x.condition, date:x.published_date, contact:x.contact,
+    notes:[x.existing_record && 'Same listing as '+x.existing_record, T_NOTES[x.id], x.evidence].filter(Boolean).join('; '),
+    status:x.existing_record ? 'Duplicate of '+x.existing_record : 'Within advertised budget; availability '+x.availability.toLowerCase(),
+    zone:/^Qorasuv/.test(x.location) ? 'Qorasuv' : 'Mirzo Ulug‘bek'
+  }))
+];
+const PRIORITY = {Q001:'start here',Q002:'start here',Q003:'start here',M006:'low price',M011:'low price',M012:'low price',M013:'low price'};
+const TRACK = ['Not contacted','Messaged','Replied','Viewing booked','Viewed','Rejected','Sold / gone','Shortlisted'];
+const SOURCES = [
+ ['OLX Uzbekistan','https://www.olx.uz/nedvizhimost/doma/prodazha/tashkent/','Website','Tashkent houses, cottages, dachas'],
+ ['Uybor','https://uybor.uz/prodaja-dom-tashkent','Website','Private houses from owners and agents'],
+ ['HATA','https://hata.uz/en/listings/sale/houses/tashkent/dom','Website','English available'],
+ ['Urbo','https://urbo.uz/search?goal_type=1&property_type__alias=house&region=3','Website','Houses and cottages, Tashkent city'],
+ ['Uylari','https://uylari.uz/l/prodazha-domov-tashkent?lang=en','Website','Houses, cottages, townhouses'],
+ ['Domtut','https://domtut.uz/filter/house','Website','Tashkent houses'],
+ ['Realt24','https://realt24.uz/ru/tashkent/kupit/doma-i-kottedzhi/?page=8','Website','Use pagination'],
+ ['Joyli','https://joyli.uz/sotuv/hovli/toshkent-sh','Website','Courtyard houses (hovli)'],
+ ['Joyka','https://joyka.uz/en/listings?page=11&property_type=house&type=sale','Website','English available'],
+ ['Uy Bozor TV','https://uybozortv.uz/dom-tashkent-kottej','Website','Tashkent and surroundings'],
+ ['Shahar','https://shahar.uz/','Website','Select Купить → дом'],
+ ['EstateHub','https://estatehub.uz/','Website','Select Tashkent, purchase, house'],
+ ['Flagma','https://flagma.uz/ru/products/prodazha-domov/tashkent/','Website','House-sale ads'],
+ ['Bisyor','https://bisyor.uz/tashkentskiy-rayon/obyavlenie/list/nedvizhimost/prodazha-nedvizhimosti/prodazha-domov','Website','Mostly Tashkent region'],
+ ['MEGAPOLIS','https://megapolis.uz/tashkent/nedvizhimost','Website','General property ads'],
+ ['UyCatalog','https://uycatalog.uz/uy?region=toshkent','Website','Houses and hovli'],
+ ['ASTOR','https://astor.uz/','Agency','Houses, apartments, commercial'],
+ ['KupiDom','https://kupidom.uz/','Agency','Houses, apartments, land, new builds'],
+ ['DOMIO','https://domio.uz/','Agency','Tashkent agency'],
+ ['HomeSale Tashkent','https://t.me/homesale_tashkent','Telegram','May mix sales and rentals'],
+ ['Свой Дом Ташкент','https://t.me/SvoyDomTashkent','Telegram',''],
+ ['Недвижимость Ташкента','https://t.me/nedvizhimost_tashkent','Telegram','Apartments and houses'],
+ ['Продажа квартир и домов — Umid','https://t.me/rieltorr_umid','Telegram',''],
+ ['Toshkent Uyjoy Bozori','https://t.me/TOSHKENT_UY','Telegram',''],
+ ['Уй Бозор Тошкент','https://t.me/uy_bozor','Telegram',''],
+ ['Uy Bozor TV','https://t.me/uybozor_toshkent_uz','Telegram','']
+];
+
+const store = {
+  get(k,d){try{const v=localStorage.getItem('qkb:'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem('qkb:'+k,JSON.stringify(v))}catch(e){}}
+};
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = n => n.toLocaleString('en-US');
+const group = s => s.startsWith('Within') ? 'ok' : s.startsWith('Archive') ? 'old' : /^(Hold|Conditional)/.test(s) ? 'warn' : s.startsWith('Duplicate') ? 'dup' : 'bad';
+const label = {ok:'Within budget',old:'Archive lead',warn:'Hold / conditional',bad:'Excluded',dup:'Duplicate'};
+const isoDate = d => /^\d{4}-\d{2}-\d{2}$/.test(d||'') ? d : null;
+const cur = c => c.startsWith('USD') ? 'USD' : 'y.e';
+const floorTxt = x => x.floor == null ? 'House' : `${x.floor}/${x.total_floors}`;
+const areaTxt = x => x.area_m2 == null ? '?' : x.area_m2 + ' m²';
+L.forEach(x => { x.g = group(x.status); x.ppm = x.area_m2 ? Math.round(x.price / x.area_m2) : null; });
+
+document.getElementById('rdate').textContent = KB.research_date;
+
+function renderStats(){
+  const c = g => L.filter(x=>x.g===g).length;
+  const okL = L.filter(x=>x.g==='ok');
+  const minP = Math.min(...okL.map(x=>x.price));
+  const t = store.get('track',{});
+  const contacted = L.filter(x => t[x.id] && t[x.id] !== 'Not contacted').length;
+  document.getElementById('stats').innerHTML = [
+    [L.length - c('dup'), `unique leads (Q ${L.filter(x=>x.id[0]==='Q').length} · M ${L.filter(x=>x.id[0]==='M').length} · Telegram ${L.filter(x=>x.id[0]==='T').length - c('dup')} new)`],
+    [c('ok'),'within budget'],[c('old'),'archive leads'],[c('warn')+c('bad'),'hold / excluded'],
+    ['$'+fmt(minP),'cheapest in budget'],[contacted+' / '+L.length,'contacted']
+  ].map(([b,s])=>`<div class="stat"><b>${b}</b><span>${s}</span></div>`).join('');
+}
+
+const fTrack = document.getElementById('fTrack');
+TRACK.forEach(t => fTrack.insertAdjacentHTML('beforeend', `<option>${t}</option>`));
+
+function renderGrid(){
+  const q = document.getElementById('q').value.toLowerCase();
+  const st = document.getElementById('fStatus').value;
+  const rm = document.getElementById('fRooms').value;
+  const tr = fTrack.value;
+  const zn = document.getElementById('fZone').value;
+  const ty = document.getElementById('fType').value;
+  const sort = document.getElementById('sort').value;
+  const track = store.get('track',{}), notes = store.get('notes',{});
+  let rows = L.filter(x =>
+    (!st || x.g===st) && (!rm || String(x.rooms).includes(rm)) &&
+    (!zn || x.zone===zn) && (!ty || (ty==='house' ? x.type.includes('house') : !x.type.includes('house'))) &&
+    (!tr || (track[x.id]||'Not contacted')===tr) &&
+    (!q || JSON.stringify(x).toLowerCase().includes(q) || (notes[x.id]||'').toLowerCase().includes(q)));
+  const s = {
+    id:(a,b)=>(b.id in PRIORITY)-(a.id in PRIORITY) || a.id.localeCompare(b.id), price:(a,b)=>a.price-b.price,
+    ppm:(a,b)=>(a.ppm ?? 1e9)-(b.ppm ?? 1e9),
+    area:(a,b)=>(b.area_m2 ?? -1)-(a.area_m2 ?? -1), date:(a,b)=>(isoDate(b.date)||'').localeCompare(isoDate(a.date)||'')
+  };
+  rows.sort(s[sort]);
+  const grid = document.getElementById('grid');
+  if(!rows.length){grid.innerHTML='<div class="empty">No listings match these filters.</div>';return}
+  grid.innerHTML = rows.map(x => `
+  <article class="card ${PRIORITY[x.id]?'top':''}">
+    <div class="row"><span class="id">${x.id}${PRIORITY[x.id]?' · '+PRIORITY[x.id]:''}</span><span class="badge b-${x.g}">${label[x.g]}</span></div>
+    <div class="row"><span class="price">$${fmt(x.price)} <span class="cur">${cur(x.currency)}</span></span><span class="muted">${x.ppm ? '$'+fmt(x.ppm)+'/m²' : 'area unknown'}</span></div>
+    <div class="loc">${esc(x.location)} <span class="muted">· ${x.zone==='Qorasuv'?'Qorasuv':'Mirzo Ulug‘bek'}${x.type.includes('house')?' · courtyard house':''}</span></div>
+    <div class="facts">
+      <div class="fact"><span>Rooms</span>${esc(String(x.rooms).replace(' converted to ','→'))}</div>
+      <div class="fact"><span>Area</span>${areaTxt(x)}</div>
+      <div class="fact"><span>Floor</span>${floorTxt(x)}</div>
+    </div>
+    <div class="muted">${esc(x.condition ?? 'Condition unknown')}${x.building ? ' · '+esc(x.building) : ''}</div>
+    <details><summary>Details &amp; source</summary><dl>
+      <dt>Source</dt><dd><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.source)} ↗</a></dd>
+      <dt>Type</dt><dd>${esc(x.type)}</dd>
+      <dt>Currency</dt><dd>${esc(x.currency)}</dd>
+      <dt>Published</dt><dd>${esc(x.date ?? 'Unknown')}</dd>
+      <dt>Contact</dt><dd>${esc(x.contact)}</dd>
+      <dt>Notes</dt><dd>${esc(x.notes)}</dd>
+      <dt>Assessment</dt><dd>${esc(x.status)}</dd>
+    </dl></details>
+    <div class="track"><select data-id="${x.id}">${TRACK.map(t=>`<option ${ (track[x.id]||'Not contacted')===t?'selected':''}>${t}</option>`).join('')}</select></div>
+    <textarea data-note="${x.id}" placeholder="Your notes (price confirmed, viewing date…)">${esc(notes[x.id]||'')}</textarea>
+  </article>`).join('');
+}
+
+document.getElementById('grid').addEventListener('change', e => {
+  if(e.target.matches('select[data-id]')){const t=store.get('track',{});t[e.target.dataset.id]=e.target.value;store.set('track',t);renderStats()}
+});
+document.getElementById('grid').addEventListener('input', e => {
+  if(e.target.matches('textarea[data-note]')){const n=store.get('notes',{});n[e.target.dataset.note]=e.target.value;store.set('notes',n)}
+});
+['q','fZone','fType','fStatus','fRooms','fTrack','sort'].forEach(id => document.getElementById(id).addEventListener('input', renderGrid));
+
+function renderTable(){
+  document.getElementById('tbl').innerHTML = '<tr><th>ID</th><th>Area</th><th>Rooms</th><th>Price</th><th>m²</th><th>$/m²</th><th>Floor</th><th>Condition</th><th>Published</th><th>Status</th></tr>' +
+    L.map(x=>`<tr><td><a href="${esc(x.url)}" target="_blank" rel="noopener">${x.id}</a></td><td>${esc(x.location)}</td><td>${esc(String(x.rooms).replace(' converted to ','→'))}</td><td>$${fmt(x.price)} <span class="cur">${cur(x.currency)}</span></td><td>${x.area_m2 ?? '?'}</td><td>${x.ppm ? fmt(x.ppm) : '—'}</td><td>${floorTxt(x)}</td><td>${esc(x.condition ?? '—')}</td><td>${esc(isoDate(x.date) ?? '—')}</td><td><span class="badge b-${x.g}">${label[x.g]}</span></td></tr>`).join('');
+}
+
+function renderSources(){
+  const q = document.getElementById('sq').value.toLowerCase();
+  document.getElementById('srcTbl').innerHTML = '<tr><th>#</th><th>Source</th><th>Kind</th><th>Notes</th></tr>' +
+    SOURCES.map((s,i)=>[i+1,...s]).filter(s=>!q||s.join(' ').toLowerCase().includes(q))
+      .map(([n,name,url,kind,note])=>`<tr><td>${n}</td><td><a href="${esc(url)}" target="_blank" rel="noopener">${esc(name)}</a></td><td>${kind}</td><td>${esc(note)}</td></tr>`).join('');
+}
+document.getElementById('sq').addEventListener('input', renderSources);
+
+document.querySelectorAll('nav.tabs button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('nav.tabs button').forEach(x=>x.classList.toggle('on', x===b));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on', p.id==='p-'+b.dataset.tab));
+}));
+
+document.getElementById('copyMsg').addEventListener('click', e => {
+  navigator.clipboard?.writeText(document.getElementById('msg').textContent).then(()=>{e.target.textContent='Copied';setTimeout(()=>e.target.textContent='Copy',1500)});
+});
+
+const theme = store.get('theme', null);
+if(theme) document.documentElement.dataset.theme = theme;
+document.getElementById('theme').addEventListener('click', () => {
+  const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.dataset.theme = dark ? 'light' : 'dark';
+  store.set('theme', document.documentElement.dataset.theme);
+});
+
+renderStats(); renderGrid(); renderTable(); renderSources();
+</script>
+</body>
+</html>
